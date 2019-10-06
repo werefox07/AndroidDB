@@ -17,7 +17,9 @@ import com.geekbrains.lesson6.data.repository.ArticleRepositoryImpl;
 import com.geekbrains.lesson6.domain.model.Article;
 import com.geekbrains.lesson6.domain.repository.ArticleRepository;
 import com.geekbrains.lesson6.domain.usecase.ArticleInteractor;
+import com.orm.SchemaGenerator;
 import com.orm.SugarContext;
+import com.orm.SugarDb;
 
 import java.util.List;
 
@@ -47,9 +49,12 @@ public class ClearActivity extends AppCompatActivity {
     private void initViewModel() {
         Api api = RetrofitInit.newApiInstance();
         SugarContext.init(getApplicationContext());
+        SchemaGenerator schemaGenerator = new SchemaGenerator(this);
+        schemaGenerator.createDatabase(new SugarDb(this).getDB());
         DbProvider<ArticleRealmData, List<Article>> dbRealm = new RealmDbImpl();
         DbProvider<ArticleRoomData, List<Article>> dbRoom = new RoomDbImpl(AppDatabase.getInstance(this));
         DbProvider<ArticleSugarData, List<Article>> dbSugar = new SugarDbImpl();
+
         ArticleRepository repository = new ArticleRepositoryImpl(api, dbRealm, dbRoom, dbSugar);
         ArticleInteractor interactor = new ArticleInteractor(repository);
 
